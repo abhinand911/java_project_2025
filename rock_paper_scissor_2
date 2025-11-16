@@ -1,0 +1,146 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Random;
+
+public class RockPaperScissorsGame extends JFrame implements ActionListener {
+
+    private JLabel playerLabel, computerLabel, resultLabel, scoreLabel;
+    private JButton rockBtn, paperBtn, scissorsBtn, resetBtn;
+    private int wins = 0, losses = 0, ties = 0;
+    private Random random;
+
+    private ImageIcon rockIcon, paperIcon, scissorsIcon;
+
+    public RockPaperScissorsGame() {
+        setTitle("Rock Paper Scissors Game");
+        setSize(650, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
+        getContentPane().setBackground(new Color(245, 245, 245));
+
+        random = new Random();
+
+        rockIcon = new ImageIcon(getClass().getResource("/resources/rock.png"));
+        paperIcon = new ImageIcon(getClass().getResource("/resources/paper.png"));
+        scissorsIcon = new ImageIcon(getClass().getResource("/resources/scissors.png"));
+
+        JLabel title = new JLabel("Rock Paper Scissors Game", JLabel.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 22));
+        title.setBounds(0, 20, 650, 30);
+        add(title);
+
+        playerLabel = new JLabel("Your Choice:", rockIcon, JLabel.CENTER);
+        playerLabel.setVerticalTextPosition(JLabel.BOTTOM);
+        playerLabel.setHorizontalTextPosition(JLabel.CENTER);
+        playerLabel.setBounds(100, 80, 150, 150);
+        add(playerLabel);
+
+        computerLabel = new JLabel("Computer's Choice:", paperIcon, JLabel.CENTER);
+        computerLabel.setVerticalTextPosition(JLabel.BOTTOM);
+        computerLabel.setHorizontalTextPosition(JLabel.CENTER);
+        computerLabel.setBounds(380, 80, 150, 150);
+        add(computerLabel);
+
+        resultLabel = new JLabel("Make your move!", JLabel.CENTER);
+        resultLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        resultLabel.setBounds(0, 260, 650, 30);
+        add(resultLabel);
+
+        scoreLabel = new JLabel("Wins: 0   Losses: 0   Ties: 0", JLabel.CENTER);
+        scoreLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        scoreLabel.setBounds(0, 290, 650, 30);
+        add(scoreLabel);
+
+        rockBtn = new JButton("Rock");
+        paperBtn = new JButton("Paper");
+        scissorsBtn = new JButton("Scissors");
+        resetBtn = new JButton("Reset Game");
+
+        rockBtn.setBounds(110, 360, 100, 30);
+        paperBtn.setBounds(240, 360, 100, 30);
+        scissorsBtn.setBounds(370, 360, 100, 30);
+        resetBtn.setBounds(260, 410, 120, 30);
+
+        rockBtn.addActionListener(this);
+        paperBtn.addActionListener(this);
+        scissorsBtn.addActionListener(this);
+        resetBtn.addActionListener(this);
+
+        add(rockBtn);
+        add(paperBtn);
+        add(scissorsBtn);
+        add(resetBtn);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String playerChoice = "";
+
+        if (e.getSource() == rockBtn) playerChoice = "Rock";
+        if (e.getSource() == paperBtn) playerChoice = "Paper";
+        if (e.getSource() == scissorsBtn) playerChoice = "Scissors";
+
+        if (e.getSource() == resetBtn) {
+            resetGame();
+            return;
+        }
+
+        String[] options = {"Rock", "Paper", "Scissors"};
+        String computerChoice = options[random.nextInt(3)];
+
+        updateImages(playerChoice, computerChoice);
+        checkWinner(playerChoice, computerChoice);
+    }
+
+    private void updateImages(String player, String computer) {
+        playerLabel.setText("You: " + player);
+        computerLabel.setText("Computer: " + computer);
+
+        playerLabel.setIcon(getIcon(player));
+        computerLabel.setIcon(getIcon(computer));
+    }
+
+    private ImageIcon getIcon(String choice) {
+        switch (choice) {
+            case "Rock": return rockIcon;
+            case "Paper": return paperIcon;
+            case "Scissors": return scissorsIcon;
+        }
+        return null;
+    }
+
+    private void checkWinner(String player, String computer) {
+        if (player.equals(computer)) {
+            ties++;
+            resultLabel.setText("It's a Tie!");
+        } else if ((player.equals("Rock") && computer.equals("Scissors")) ||
+                   (player.equals("Paper") && computer.equals("Rock")) ||
+                   (player.equals("Scissors") && computer.equals("Paper"))) {
+            wins++;
+            resultLabel.setText("You Win!");
+        } else {
+            losses++;
+            resultLabel.setText("Computer Wins!");
+        }
+
+        scoreLabel.setText("Wins: " + wins + "   Losses: " + losses + "   Ties: " + ties);
+    }
+
+    private void resetGame() {
+        wins = losses = ties = 0;
+        resultLabel.setText("Game reset! Make your move.");
+        scoreLabel.setText("Wins: 0   Losses: 0   Ties: 0");
+        playerLabel.setText("Your Choice:");
+        computerLabel.setText("Computer's Choice:");
+        playerLabel.setIcon(rockIcon);
+        computerLabel.setIcon(paperIcon);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            RockPaperScissorsGame game = new RockPaperScissorsGame();
+            game.setVisible(true);
+        });
+    }
+}
